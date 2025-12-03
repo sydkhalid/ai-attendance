@@ -22,12 +22,9 @@ RUN mkdir -p /var/www/storage \
     && mkdir -p /var/www/bootstrap/cache \
     && chmod -R 777 /var/www/storage /var/www/bootstrap/cache
 
-# Laravel optimized
-RUN php artisan config:cache || true
-RUN php artisan route:cache || true
-RUN php artisan view:cache || true
+# DO NOT run php artisan commands during build!
 
-# Run app
-CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000
+# Start Laravel in runtime
+CMD php artisan migrate --force && php artisan config:cache && php artisan serve --host=0.0.0.0 --port=8000
 
 EXPOSE 8000
