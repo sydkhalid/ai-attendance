@@ -1,0 +1,14 @@
+name: laravel-app
+
+services:
+  web:
+    ports:
+      - port: 8000
+    env:
+      APP_ENV: production
+      APP_DEBUG: false
+    deploy:
+      strategy: rolling
+    health_check:
+      http:
+        path: /
