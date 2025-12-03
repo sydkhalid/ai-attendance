@@ -28,3 +28,4 @@ RUN mkdir -p /var/www/storage \
 CMD php artisan migrate --force && php artisan config:cache && php artisan serve --host=0.0.0.0 --port=8000
 
 EXPOSE 8000
+
