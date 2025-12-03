@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 FROM php:8.3-fpm
 
 # Install system dependencies
@@ -6,11 +8,8 @@ RUN apt-get update && apt-get install -y \
     ca-certificates gnupg
 
 # Install Node.js (required for Vite)
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs
-
-# Verify Node and npm
-RUN node -v && npm -v
 
 # Install PHP extensions
 RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql zip gd
@@ -20,13 +19,12 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
-# Copy code
 COPY . .
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Install JS dependencies and build Vite
+# Install JS dependencies and build assets
 RUN npm install && npm run build
 
 # Permissions
