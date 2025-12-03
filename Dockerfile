@@ -11,18 +11,23 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy code
+# Copy project files
 COPY . /var/www
 
-# Install dependencies
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Storage + Permissions
+# Laravel permissions
 RUN mkdir -p /var/www/storage \
     && mkdir -p /var/www/bootstrap/cache \
     && chmod -R 777 /var/www/storage /var/www/bootstrap/cache
 
-# Command to run Laravel
+# Laravel optimized
+RUN php artisan config:cache || true
+RUN php artisan route:cache || true
+RUN php artisan view:cache || true
+
+# Run app
 CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000
 
 EXPOSE 8000
