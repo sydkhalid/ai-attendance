@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\AuthController;
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'stats']);
+    Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::post('/attendance/detect', [AttendanceController::class, 'detect']);
     Route::post('/attendance/submit', [AttendanceController::class, 'submit']);
 });
