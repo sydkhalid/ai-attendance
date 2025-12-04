@@ -111,7 +111,9 @@ class AttendanceController extends Controller
         $allStudents = Student::pluck('id')->toArray();
 
         $present = $request->present_student_ids;
-        $absent  = array_diff($allStudents, $present);
+
+        // FIXED: reset array keys
+        $absent = array_values(array_diff($allStudents, $present));
 
         // Save PRESENT students
         foreach ($present as $studentId) {
