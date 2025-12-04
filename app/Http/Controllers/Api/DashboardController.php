@@ -8,7 +8,7 @@ use App\Models\AttendanceLog;
 
 class DashboardController extends Controller
 {
-    public function stats()
+    public function index()
     {
         $today = now()->format('Y-m-d');
 
