@@ -12,15 +12,19 @@ class DashboardController extends Controller
     {
         $today = now()->format('Y-m-d');
 
-        $present = AttendanceLog::whereDate('created_at', $today)
+        // Use attendance_date instead of created_at
+        $present = AttendanceLog::whereDate('attendance_date', $today)
             ->where('status', 'present')
             ->count();
 
-        $absent = AttendanceLog::whereDate('created_at', $today)
+        $absent = AttendanceLog::whereDate('attendance_date', $today)
             ->where('status', 'absent')
             ->count();
 
-        $totalUsers = AttendanceLog::distinct()->count('student_id');
+        // Total students marked today
+        $totalUsers = AttendanceLog::whereDate('attendance_date', $today)
+            ->distinct()
+            ->count('student_id');
 
         return response()->json([
             'success' => true,
