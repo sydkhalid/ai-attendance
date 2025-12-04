@@ -62,7 +62,8 @@ class AttendanceController extends Controller
 
         return response()->json([
             "present_students" => $presentStudents,
-            "absent_students"  => $absentStudents
+            "absent_students"  => $absentStudents,
+            "image_url" => null
         ], 200);
     }
 
