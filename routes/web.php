@@ -2,60 +2,73 @@
 
 use Illuminate\Support\Facades\Route;
 
-// ========== ADMIN CONTROLLERS ==========
+// ADMIN CONTROLLERS
 use App\Http\Controllers\Admin\StudentAdminController;
 use App\Http\Controllers\Admin\AttendanceAdminController;
 
-// ================================================================
-// ROOT REDIRECT → LOGIN
-// ================================================================
+/*
+|--------------------------------------------------------------------------
+| ROOT REDIRECT → LOGIN
+|--------------------------------------------------------------------------
+*/
 Route::get('/', function () {
     return redirect()->route('login');
 });
-Route::prefix('admin/students')->group(function () {
 
-    Route::get('/', [StudentAdminController::class, 'index'])->name('admin.students.index');
-    Route::post('/store', [StudentAdminController::class, 'store'])->name('admin.students.store');
 
-    Route::get('/show/{id}', [StudentAdminController::class, 'show']);
-    Route::post('/update/{id}', [StudentAdminController::class, 'update']);
+/*
+|--------------------------------------------------------------------------
+| AUTH ROUTES (LOGIN / LOGOUT / REGISTER / PASSWORD RESET)
+|--------------------------------------------------------------------------
+*/
+require __DIR__.'/auth.php';
 
-    Route::delete('/delete/{id}', [StudentAdminController::class, 'destroy']);
 
-    // B2 FEATURE — DELETE SINGLE IMAGE
-    Route::delete('/image/delete', [StudentAdminController::class, 'deleteImage']);
-});
-
-// ================================================================
-// ADMIN ROUTES (AUTH REQUIRED)
-// ================================================================
+/*
+|--------------------------------------------------------------------------
+| ADMIN ROUTES (AUTH REQUIRED)
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth'])
     ->prefix('admin')
     ->as('admin.')
     ->group(function () {
 
-        // -------------------------
-        // DASHBOARD
-        // -------------------------
+        // Dashboard
         Route::get('/', function () {
             return view('admin.dashboard');
         })->name('dashboard');
 
+        /*
+        |--------------------------------------------------------------------------
+        | STUDENTS MODULE
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('students')->as('students.')->group(function () {
+
+            Route::get('/', [StudentAdminController::class, 'index'])->name('index');
+            Route::post('/store', [StudentAdminController::class, 'store'])->name('store');
+
+            Route::get('/show/{id}', [StudentAdminController::class, 'show'])->name('show');
+            Route::post('/update/{id}', [StudentAdminController::class, 'update'])->name('update');
+
+            Route::delete('/delete/{id}', [StudentAdminController::class, 'destroy'])->name('delete');
+
+            // Delete a single image from gallery
+            Route::delete('/image/delete', [StudentAdminController::class, 'deleteImage'])->name('image.delete');
+        });
 
 
-        // ============================================================
-        // ATTENDANCE MODULE
-        // ============================================================
+        /*
+        |--------------------------------------------------------------------------
+        | ATTENDANCE MODULE
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('attendance')->as('attendance.')->group(function () {
 
-        Route::get('/attendance', [AttendanceAdminController::class, 'index'])
-            ->name('attendance.index');
+            Route::get('/', [AttendanceAdminController::class, 'index'])->name('index');
 
-        Route::get('/attendance/export', [AttendanceAdminController::class, 'export'])
-            ->name('attendance.export');
+            Route::get('/export', [AttendanceAdminController::class, 'export'])->name('export');
+        });
+
     });
-
-
-// ================================================================
-// AUTH ROUTES (LOGIN / LOGOUT / REGISTER / PASSWORD RESET)
-// ================================================================
-require __DIR__ . '/auth.php';
