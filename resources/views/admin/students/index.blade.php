@@ -218,6 +218,7 @@
 @section('js')
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
@@ -234,7 +235,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
 
 <script>
@@ -260,7 +260,12 @@ $(function () {
             { data: 'name' },
             { data: 'roll_no' },
             { data: 'image', orderable: false, searchable: false },
-            { data: 'rekognition_face_id' },
+            {
+                data: 'rekognition_face_id',
+                render: function (data) {
+                    return data ? data : '-';
+                }
+            },
             { data: 'actions', orderable: false, searchable: false, className: 'no-export' }
         ]
     });

@@ -23,18 +23,21 @@ class AwsRekognitionService
 
 
     /**
-     * INDEX FACE
+     * INDEX FACE (For student registration)
      */
     public function indexFace($imageBytes, $studentId)
     {
         try {
 
             $res = $this->client->indexFaces([
-                'CollectionId' => env('AWS_REKOGNITION_COLLECTION'),
-                'ExternalImageId' => (string) $studentId,
-                'Image' => ['Bytes' => $imageBytes],
+                'CollectionId'      => env('AWS_REKOGNITION_COLLECTION'),
+                'ExternalImageId'   => (string) $studentId,
+                'Image'             => ['Bytes' => $imageBytes],
                 'DetectionAttributes' => ['DEFAULT']
             ]);
+
+            // Debug log
+            Log::info("IndexFace Response", $res->toArray());
 
             return $res['FaceRecords'][0]['Face']['FaceId'] ?? null;
 
@@ -46,17 +49,20 @@ class AwsRekognitionService
 
 
     /**
-     * SEARCH FACE
+     * SEARCH FACE (on cropped face image)
      */
     public function searchFaces($imageBytes)
     {
         try {
             $result = $this->client->searchFacesByImage([
-                'CollectionId' => env('AWS_REKOGNITION_COLLECTION'),
-                'Image' => ['Bytes' => $imageBytes],
+                'CollectionId'       => env('AWS_REKOGNITION_COLLECTION'),
+                'Image'              => ['Bytes' => $imageBytes],
                 'FaceMatchThreshold' => 80,
-                'MaxFaces' => 100 // detect group
+                'MaxFaces'           => 15
             ]);
+
+            // Debug log
+            Log::info("SearchFaces Response", $result->toArray());
 
             return $result['FaceMatches'] ?? [];
 
@@ -68,17 +74,47 @@ class AwsRekognitionService
 
 
     /**
-     * DELETE FACE
+     * DETECT FACES in group image (before cropping)
+     */
+    public function detectFaces($imageBytes)
+    {
+        try {
+
+            $response = $this->client->detectFaces([
+                'Image' => ['Bytes' => $imageBytes],
+                'Attributes' => ['DEFAULT']
+            ]);
+
+            // Debug log
+            Log::info("DetectFaces Bounding Boxes", $response->toArray());
+
+            return $response;
+
+        } catch (\Exception $e) {
+            Log::error("Rekognition detectFaces Error: " . $e->getMessage());
+            return [];
+        }
+    }
+
+
+    /**
+     * DELETE FACE from AWS collection
      */
     public function deleteFace($faceId)
     {
         try {
-            return $this->client->deleteFaces([
+            $result = $this->client->deleteFaces([
                 'CollectionId' => env('AWS_REKOGNITION_COLLECTION'),
-                'FaceIds' => [$faceId]
+                'FaceIds'      => [$faceId]
             ]);
+
+            Log::info("DeleteFace Response", $result->toArray());
+
+            return $result;
+
         } catch (\Exception $e) {
             Log::error("Rekognition Delete Error: " . $e->getMessage());
+            return null;
         }
     }
 }

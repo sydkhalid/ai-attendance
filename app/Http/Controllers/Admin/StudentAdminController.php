@@ -23,20 +23,20 @@ class StudentAdminController extends Controller
             return datatables()->eloquent($query)
                 ->addColumn('image', function ($s) {
                     if ($s->face_image) {
-                        return '<img src="'.asset('storage/'.$s->face_image)
-                            .'" width="50" class="img-thumbnail rounded">';
+                        return '<img src="' . asset('storage/' . $s->face_image)
+                            . '" width="50" class="img-thumbnail rounded">';
                     }
                     return '<span class="badge bg-secondary">No Image</span>';
                 })
                 ->addColumn('actions', function ($s) {
                     return '
-                        <button data-id="'.$s->id.'" class="btn btn-info btn-sm viewBtn">
+                        <button data-id="' . $s->id . '" class="btn btn-info btn-sm viewBtn">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button data-id="'.$s->id.'" class="btn btn-warning btn-sm editBtn">
+                        <button data-id="' . $s->id . '" class="btn btn-warning btn-sm editBtn">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button data-id="'.$s->id.'" class="btn btn-danger btn-sm deleteBtn">
+                        <button data-id="' . $s->id . '" class="btn btn-danger btn-sm deleteBtn">
                             <i class="fas fa-trash"></i>
                         </button>
                     ';
@@ -184,4 +184,3 @@ class StudentAdminController extends Controller
         return response()->json(['status' => true]);
     }
 }
-

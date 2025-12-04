@@ -19,6 +19,21 @@ class AttendanceAdminController extends Controller
 
         return view('admin.attendance.index', compact('attendance', 'date'));
     }
+    public function ajax(Request $request)
+    {
+        $date = $request->date ?? date('Y-m-d');
+
+        $query = AttendanceLog::with('student')
+            ->where('attendance_date', $date)
+            ->orderBy('student_id', 'ASC');
+
+        return datatables()->eloquent($query)
+            ->addColumn('student_name', fn($a) => $a->student->name)
+            ->addColumn('roll_no', fn($a) => $a->student->roll_no)
+            ->addColumn('image_url', fn($a) => $a->image_url)
+            ->make(true);
+    }
+
 
     public function export(Request $request)
     {

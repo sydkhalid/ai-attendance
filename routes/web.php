@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 // ADMIN CONTROLLERS
 use App\Http\Controllers\Admin\StudentAdminController;
 use App\Http\Controllers\Admin\AttendanceAdminController;
+use App\Http\Controllers\Admin\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,13 +15,6 @@ use App\Http\Controllers\Admin\AttendanceAdminController;
 Route::get('/', function () {
     return redirect()->route('login');
 });
-
-
-/*
-|--------------------------------------------------------------------------
-| AUTH ROUTES (LOGIN / LOGOUT / REGISTER / PASSWORD RESET)
-|--------------------------------------------------------------------------
-*/
 require __DIR__.'/auth.php';
 
 
@@ -34,10 +28,8 @@ Route::middleware(['auth'])
     ->as('admin.')
     ->group(function () {
 
-        // Dashboard
-        Route::get('/', function () {
-            return view('admin.dashboard');
-        })->name('dashboard');
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
 
         /*
         |--------------------------------------------------------------------------
@@ -47,15 +39,16 @@ Route::middleware(['auth'])
         Route::prefix('students')->as('students.')->group(function () {
 
             Route::get('/', [StudentAdminController::class, 'index'])->name('index');
-            Route::post('/store', [StudentAdminController::class, 'store'])->name('store');
+            Route::get('/list', [StudentAdminController::class, 'list'])->name('list');
 
+            Route::post('/store', [StudentAdminController::class, 'store'])->name('store');
             Route::get('/show/{id}', [StudentAdminController::class, 'show'])->name('show');
+
             Route::post('/update/{id}', [StudentAdminController::class, 'update'])->name('update');
 
             Route::delete('/delete/{id}', [StudentAdminController::class, 'destroy'])->name('delete');
-
-            // Delete a single image from gallery
             Route::delete('/image/delete', [StudentAdminController::class, 'deleteImage'])->name('image.delete');
+
         });
 
 
@@ -68,7 +61,11 @@ Route::middleware(['auth'])
 
             Route::get('/', [AttendanceAdminController::class, 'index'])->name('index');
 
+            Route::get('/ajax', [AttendanceAdminController::class, 'ajax'])->name('ajax');
+
             Route::get('/export', [AttendanceAdminController::class, 'export'])->name('export');
+
         });
 
     });
+
